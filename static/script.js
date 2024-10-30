@@ -1,6 +1,6 @@
 const canvas = document.getElementById('drawingCanvas');
 const ctx = canvas.getContext('2d');
-ctx.lineWidth = 10;  // Set the cursor width to 10
+ctx.lineWidth = 10;
 let drawing = false;
 
 canvas.addEventListener('mousedown', startDrawing);
@@ -23,7 +23,7 @@ function stopDrawing() {
 
 function draw(e) {
     if (!drawing) return;
-    e.preventDefault();  // Prevent scrolling on touch
+    e.preventDefault();
 
     const pos = getEventPosition(e);
     ctx.lineTo(pos.x, pos.y);
@@ -51,8 +51,8 @@ document.getElementById('saveButton').addEventListener('click', function() {
         })
         .then(response => {
             if (response.ok) {
-                // Clear the canvas after a successful save
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                loadGallery();  // Refresh gallery after saving
             } else {
                 console.error('Failed to save the image');
             }
@@ -63,7 +63,46 @@ document.getElementById('saveButton').addEventListener('click', function() {
     }
 });
 
-// Clear button functionality
 document.getElementById('clearButton').addEventListener('click', function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
+
+function loadGallery() {
+    fetch('/get_images')  // Endpoint that returns image data as JSON
+        .then(response => response.json())
+        .then(images => {
+
+
+            const width = 6
+
+            let table = "<table border='1'>";
+            images.forEach((image, i) => {  
+                // Start a new row every 4 images
+                if (i % width === 0) {
+                    table += "<tr>";
+                }
+
+                table += `<td><img width="152" src="/static/images/${image.filename}" /><hr/>${image.title}</td>`;
+
+                // Close the row after 4 images
+                if (i % width === width - 1 ) {
+                    table += "</tr>";
+                }
+            });
+
+            // Close the last row if it’s not closed
+            if (images.length % width !== 0) {
+                table += "</tr>";
+            }
+
+            table += "</table>";
+            document.getElementById("imageGallery").innerHTML = table;
+        })
+        .catch(error => {
+            console.error('Error loading gallery:', error);
+        });
+}
+
+
+// Initial load of the gallery
+loadGallery();
