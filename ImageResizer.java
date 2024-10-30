@@ -2,7 +2,17 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
+/*
+Dear Future;
 
+I first tried python ( Pillow ) to resize the images from 256 by 256 to 28 by 28. 
+That failed. So I tried  node's sharp, jimp and canvas. Those failed. 
+I finally settled on this java...   ...I suspect that the python and node
+versions failed because my computer is ARM and some of the dependencies in the 
+python and node code dislike arm - Rolling java into a python project makes me 
+sad, but...   \_0_/ 
+
+*/
 public class ImageResizer {
 
     public static void main(String[] args) {
