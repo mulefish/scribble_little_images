@@ -12,6 +12,8 @@ os.makedirs(images_dir, exist_ok=True)
 def index():
     return render_template('index.html')
 
+
+
 @app.route('/save_image', methods=['POST'])
 def save_image():
     data_url = request.form['imageData']
