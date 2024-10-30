@@ -67,42 +67,45 @@ document.getElementById('clearButton').addEventListener('click', function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
+// Fetch and display the image gallery
 function loadGallery() {
     fetch('/get_images')  // Endpoint that returns image data as JSON
         .then(response => response.json())
         .then(images => {
+            const gallery = document.getElementById('imageGallery');
+            gallery.innerHTML = '';  // Clear any existing gallery content
 
-
-            const width = 6
-
-            let table = "<table border='1'>";
-            images.forEach((image, i) => {  
+            let table = document.createElement('table');
+            let row;
+            let width = 8
+            images.forEach((image, index) => {
                 // Start a new row every 4 images
-                if (i % width === 0) {
-                    table += "<tr>";
+                if (index % width === 0) {
+                    row = document.createElement('tr');
+                    table.appendChild(row);
                 }
 
-                table += `<td><img width="152" src="/static/images/${image.filename}" /><hr/>${image.title}</td>`;
+                let cell = document.createElement('td');
+                let img = document.createElement('img');
+                img.src = `/static/images/${image.filename}`;
+                img.alt = image.title;
+                img.width = 128;
+                img.height = 128;
 
-                // Close the row after 4 images
-                if (i % width === width - 1 ) {
-                    table += "</tr>";
-                }
+                let caption = document.createElement('p');
+                caption.innerText = image.title;
+
+                cell.appendChild(img);
+                cell.appendChild(caption);
+                row.appendChild(cell);
             });
 
-            // Close the last row if it’s not closed
-            if (images.length % width !== 0) {
-                table += "</tr>";
-            }
-
-            table += "</table>";
-            document.getElementById("imageGallery").innerHTML = table;
+            gallery.appendChild(table);
         })
         .catch(error => {
             console.error('Error loading gallery:', error);
         });
 }
-
 
 // Initial load of the gallery
 loadGallery();

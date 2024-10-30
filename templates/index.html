@@ -7,29 +7,21 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+
     I love this: <a href="https://twitter.com/gabeElbling/status/1850220333631943068">https://twitter.com/gabeElbling/status/1850220333631943068</a> 
+    <br/>
     This is a thing to gather chars to train something to feed into something like that. 
+    <br/>
     This project does ZERO interesting - this is just a frontend to gather data to train on to do something interesting in RNN.
-    It will save drawing images into the 'images' directory. If there is a name collision it will overwrite the original .png            
-    <hr/>
-    <table>
-        <tr>
-            <td valign="top">
-                <button id="saveButton">Save Drawing</button>
-                <br/>
-                <button id="clearButton">Clear Drawing</button>
-                <br/>
-                <button id="loadButton">Load Drawings</button>
-            
-            </td>          
-            <td>&nbsp;</td>
-            <td valign="top">
-                <canvas id="drawingCanvas" width="256" height="256"></canvas>
+    <br/>
+    It will save drawing images into the 'images' directory. If there is a name collision it will overwrite the original .png
 
-            </td>
-        </tr>        
-    </table>
+    
+    <h1>Draw a something! And label it!</h1>
+    <button id="saveButton">Save Drawing</button>
+    <button id="clearButton">Clear Drawing</button>
 
+    <canvas id="drawingCanvas" width="256" height="256"></canvas>
     <hr/>
     <div id="imageGallery"></div>
 
