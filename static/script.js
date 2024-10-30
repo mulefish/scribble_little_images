@@ -62,3 +62,8 @@ document.getElementById('saveButton').addEventListener('click', function() {
         });
     }
 });
+
+// Clear button functionality
+document.getElementById('clearButton').addEventListener('click', function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
