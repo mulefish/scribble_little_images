@@ -77,7 +77,7 @@ function loadGallery() {
 
             let table = document.createElement('table');
             let row;
-            let width = 8
+            let width = 9
             images.forEach((image, index) => {
                 // Start a new row every 4 images
                 if (index % width === 0) {
