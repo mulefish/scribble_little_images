@@ -16,5 +16,9 @@ https://x.com/gabeElbling/status/1850220333631943068
 # tests
 None! Silly. This is a one off
 
+# version4 
+step A: node nn_version4_train.js   ( will write a weights file ) 
+step B: node nn_verionn4_predict.js   ( will use the weights file as a model ) 
+
 # output
 ![something here](./example.jpeg)

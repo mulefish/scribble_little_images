@@ -20,14 +20,13 @@ const learningRate = 0.1;
 const epochs = 1000;
 const hiddenLayerSize = 5; // Number of neurons in the hidden layer
 
-// Set training options
 const options = {
     learningRate,
     epochs,
     hiddenLayerSize,
 };
 
-// Train the neural network
+// Train the neural network! Work!
 const trainedModel = trainNeuralNetwork(X, y, options);
 
 // Save trained model to a file

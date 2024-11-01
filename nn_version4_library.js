@@ -1,13 +1,12 @@
-// Importing fs module for saving model parameters
 import fs from 'fs';
 
-// Sigmoid activation function
 function sigmoid(x) {
+    // Sigmoid activation function
     return 1 / (1 + Math.exp(-x));
 }
 
-// Derivative of sigmoid for backpropagation
 function sigmoidDerivative(x) {
+    // Derivative of sigmoid for backpropagation
     return x * (1 - x);
 }
 
@@ -16,8 +15,8 @@ function initializeWeights(size) {
     return Array.from({ length: size }, () => Math.random());
 }
 
-// Training function
 function trainNeuralNetwork(X, y, options) {
+    // Training function
     const { learningRate, epochs, hiddenLayerSize } = options;
 
     let weightsInputToHidden = initializeWeights(hiddenLayerSize);
@@ -69,5 +68,4 @@ function saveModel(model, filename = 'trained_model.json') {
     fs.writeFileSync(filename, JSON.stringify(model));
 }
 
-// Export functions for external use
 export { sigmoid, sigmoidDerivative, initializeWeights, trainNeuralNetwork, saveModel };
