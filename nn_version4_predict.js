@@ -1,8 +1,17 @@
 import { promises as fs } from 'fs';
 import { sigmoid } from './nn_version4_library.js';
 
+
+    // Test dataToLookAt
+    const dataToLookAt = [
+        -100, -1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.9999, 1, 1.1, 100, "Kittycat"
+    ];
+
+
+
 // Asynchronously load the model
-async function loadModel(filename = 'trained_model_3_layers.json') {
+const modelName = "nn_version4_model.json"
+async function loadModel(filename = modelName) {
     const data = await fs.readFile(filename, 'utf-8');
     return JSON.parse(data);
 }
@@ -30,13 +39,9 @@ async function runPredictions() {
     // Load the trained model
     const model = await loadModel();
 
-    // Test examples
-    const examples = [
-        -100, -1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.9999, 1, 1.1, 100, "Kittycat"
-    ];
 
     // Print predictions
-    examples.forEach(example => {
+    dataToLookAt.forEach(example => {
         const probabilityB = predict(example, model);
         const probabilityA = 1 - probabilityB;
         console.log(`Input: ${example}`);
@@ -45,7 +50,15 @@ async function runPredictions() {
     });
 }
 
+
+
+
 // Run the predictions
 runPredictions().catch(error => {
     console.error('Error loading the model or making predictions:', error);
 });
+
+
+
+const msg = "THIS IS USED weights from " + modelName + " and it examined this array\n" + JSON.stringify( dataToLookAt )
+console.log ( msg )

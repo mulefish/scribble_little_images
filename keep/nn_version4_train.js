@@ -31,5 +31,5 @@ const options = {
 const trainedModel = trainNeuralNetwork(X, y, options);
 
 // Save trained model to a file
-saveModel(trainedModel, 'trained_model_3_layers.json');
-console.log("Training complete. Model saved to 'trained_model_3_layers.json'.");
+saveModel(trainedModel, 'nn_version4_model.json');
+console.log("Training complete. Model saved to 'nn_version4_model.json'.");
