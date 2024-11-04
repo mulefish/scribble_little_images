@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Matrix Chart</title>
+<title>Matrix Chart - SVG</title>
 <style>
-    canvas {
+    svg {
         border: 1px solid #ddd;
         background-color: #f9f9f9;
     }
@@ -15,18 +15,27 @@
 
 <div id="viewport"></div>
 <hr/>
+<ul>
+    <li>
+        A higher score on Fiscal Conservatism (e.g., 70, 80) reflects stronger alignment with limited government, low taxation, and restrained spending.
+
+    </li>
+    <li>
+        A higher score on Social Conservatism (interpreted here as the inverse of social liberalism) reflects a stronger commitment to traditional cultural values and resistance to social changes that would disrupt these traditions.
+    </li>
+</ul>
 
 <script>
-    const W = window.innerWidth * 0.9; // 90% of the window width for canvas
-    const H = window.innerHeight * 0.65; // 65% of the window height for canvas
-    const padding = 40; // Increased padding to allow room for labels on the left side
-    const vp = `<canvas id="chartCanvas" width=${W + padding * 2} height=${H + padding * 2}></canvas>`;
-    document.getElementById("viewport").innerHTML = vp;
+    const W = window.innerWidth * 0.9; // 90% of the window width for SVG
+    const H = window.innerHeight * 0.65; // 65% of the window height for SVG
+    const padding = 40; // Padding for labels
 
-    const canvas = document.getElementById("chartCanvas");
-    const ctx = canvas.getContext("2d");
+    // Create SVG element
+    const svg = `<svg id="chartSVG" width="${W + padding * 2}" height="${H + padding * 2}"></svg>`;
+    document.getElementById("viewport").innerHTML = svg;
 
-    // Data
+    const svgElement = document.getElementById("chartSVG");
+
     const japanPmData = [
         { Name: "Eisaku Satō", Start: 1964, End: 1972, SocialLiberalism: 40, FiscalConservatism: 70, EconomicGrowth: 7.0 },
         { Name: "Kakuei Tanaka", Start: 1972, End: 1974, SocialLiberalism: 50, FiscalConservatism: 65, EconomicGrowth: 5.0 },
@@ -54,83 +63,46 @@
     const minX = 30, maxX = 100; // Fiscal Conservatism range, skipping first 30%
     const minY = 30, maxY = 100; // Social Liberalism range, skipping first 30%
 
-    // Adjusted function to draw grid with zoomed-in labels
+    // Draw grid with labels
     function drawGrid() {
-        ctx.strokeStyle = "#ddd";
-        ctx.lineWidth = 1;
-        ctx.font = "12px Arial";
-        ctx.fillStyle = "#000";
-
-        // Labels for grid
         for (let i = 0; i <= 10; i++) {
             const x = padding + i * (W / 10);
             const y = padding + H - i * (H / 10);
             const xLabel = Math.round(minX + i * (maxX - minX) / 10);
             const yLabel = Math.round(minY + i * (maxY - minY) / 10);
 
-            // Vertical lines and x-axis labels
-            ctx.beginPath();
-            ctx.moveTo(x, padding);
-            ctx.lineTo(x, padding + H);
-            ctx.stroke();
-            ctx.fillText(xLabel, x - 10, padding + H + 20);
+            // Vertical lines
+            svgElement.innerHTML += `<line x1="${x}" y1="${padding}" x2="${x}" y2="${padding + H}" stroke="#ddd"/>`;
+            svgElement.innerHTML += `<text x="${x - 10}" y="${padding + H + 20}" font-size="12" fill="#000">${xLabel}</text>`;
 
-            // Horizontal lines and y-axis labels
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(padding + W, y);
-            ctx.stroke();
-            if (i !== 0) ctx.fillText(yLabel, padding - 30, y + 4);
+            // Horizontal lines
+            svgElement.innerHTML += `<line x1="${padding}" y1="${y}" x2="${padding + W}" y2="${y}" stroke="#ddd"/>`;
+            if (i !== 0) svgElement.innerHTML += `<text x="${padding - 30}" y="${y + 4}" font-size="12" fill="#000">${yLabel}</text>`;
         }
 
         // Axis titles
-        ctx.fillText("Fiscal Conservatism (30-100)", padding + W / 2 - 60, padding + H + 30);
-        ctx.save();
-        ctx.translate(padding - 30, padding + H / 2);
-        ctx.rotate(-Math.PI / 2);
-        ctx.fillText("Social Liberalism (30-100)", 0, 0);
-        ctx.restore();
+        svgElement.innerHTML += `<text x="${padding + W / 2 - 60}" y="${padding + H + 30}" font-size="14" fill="#000">Fiscal Conservatism (30-100)</text>`;
+        svgElement.innerHTML += `<text x="${padding - 30}" y="${padding + H / 2}" font-size="14" fill="#000" transform="rotate(-90 ${padding - 30},${padding + H / 2})">Social Liberalism (30-100)</text>`;
     }
 
-    // Adjusted data point drawing to account for zoom
+    // Draw data points and labels
     function drawDataPoint(data, color) {
         data.forEach(d => {
             const x = padding + ((d.FiscalConservatism - minX) / (maxX - minX)) * W;
             const y = padding + H - ((d.SocialLiberalism - minY) / (maxY - minY)) * H;
+            const label = d.EconomicGrowth == null ? `${d.Name} : ${d.Start} : tbd` : `${d.Name} : ${d.Start} : ${d.EconomicGrowth}`;
 
-            // Draw dot
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(x, y, 5, 0, 2 * Math.PI);
-            ctx.fill();
+            // Draw circle
+            svgElement.innerHTML += `<circle cx="${x}" cy="${y}" r="5" fill="${color}"/>`;
 
-            // Draw economic growth line
+            // Economic growth line
             if (d.EconomicGrowth !== null) {
-                const lineLength = d.EconomicGrowth * (W / 50); // Scale line based on economic growth
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-                ctx.lineTo(x + lineLength, y);
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 2;
-                ctx.stroke();
+                const lineLength = d.EconomicGrowth * (W / 50);
+                svgElement.innerHTML += `<line x1="${x}" y1="${y}" x2="${x + lineLength}" y2="${y}" stroke="${color}" stroke-width="2"/>`;
             }
 
             // Draw name and % growth
-            ctx.fillStyle = color;
-            ctx.font = "10px Arial";
-            let label = "" 
-            if ( d.EconomicGrowth == null ) {
-                label = `${d.Name} : ${d.Start} : tbd`;
-            } else {
-                label = `${d.Name} : ${d.Start} : ${d.EconomicGrowth}`;
-            }
-            ctx.fillText(label, x + 5, y + (color === "brown" ? 12 : -8));
-
-            // Draw % growth to the left of the name with margin
-            // if (d.EconomicGrowth !== null) {
-            //     ctx.fillStyle = "gray";
-            //     ctx.fillText(`${d.EconomicGrowth}%`, x - 40, y + (color === "brown" ? 12 : -8));
-            // }
+            svgElement.innerHTML += `<text x="${x + 5}" y="${y + (color === "brown" ? 12 : -8)}" font-size="10" fill="${color}">${label}</text>`;
         });
     }
 
