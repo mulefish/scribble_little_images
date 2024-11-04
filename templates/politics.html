@@ -15,16 +15,22 @@
 
 <div id="viewport"></div>
 <hr/>
+<fieldset>
+    <label>term defintions used here</label>
 <ul>
     <li>
-        A higher score on Fiscal Conservatism (e.g., 70, 80) reflects stronger alignment with limited government, low taxation, and restrained spending.
-
+        Here, up is 'socially' liberal and 'down' is more conservative. 
     </li>
     <li>
-        A higher score on Social Conservatism (interpreted here as the inverse of social liberalism) reflects a stronger commitment to traditional cultural values and resistance to social changes that would disrupt these traditions.
+        Here, right is 'fiscally conversative'
     </li>
+    <li>
+        <b>Fiscal conservatism</b> is focused on responsible, restrained government spending and a limited role of government in the economy. Fiscal conservatives believe that sound economic policy minimizes debt and prevents excessive taxation or government intervention in the free market. Key aspects of fiscal conservatism include:
+    </li>
+    <li>
+        <b>Social conservatism</b> generally emphasizes traditional values, cultural norms, and moral codes that guide societal behavior. Social conservatives often support policies that maintain established customs, institutions, and cultural traditions, which they believe provide societal stability. Common themes associated with social conservatism include:    </li>
 </ul>
-
+</fieldset>
 <script>
     const W = window.innerWidth * 0.9; // 90% of the window width for SVG
     const H = window.innerHeight * 0.65; // 65% of the window height for SVG
@@ -49,6 +55,7 @@
     ];
 
     const usPresidentsData = [
+
         { Name: "Richard Nixon", Start: 1969, End: 1974, SocialLiberalism: 40, FiscalConservatism: 70, EconomicGrowth: 2.5 },
         { Name: "Gerald Ford", Start: 1974, End: 1977, SocialLiberalism: 45, FiscalConservatism: 65, EconomicGrowth: -0.5 },
         { Name: "Jimmy Carter", Start: 1977, End: 1981, SocialLiberalism: 60, FiscalConservatism: 55, EconomicGrowth: 3.0 },
@@ -90,7 +97,7 @@
         data.forEach(d => {
             const x = padding + ((d.FiscalConservatism - minX) / (maxX - minX)) * W;
             const y = padding + H - ((d.SocialLiberalism - minY) / (maxY - minY)) * H;
-            const label = d.EconomicGrowth == null ? `${d.Name} : ${d.Start} : tbd` : `${d.Name} : ${d.Start} : ${d.EconomicGrowth}`;
+            const label = d.EconomicGrowth == null ? `${d.Name} : ${d.Start} : tbd` : `${d.Name} : ${d.Start} : growth ${d.EconomicGrowth}%`;
 
             // Draw circle
             svgElement.innerHTML += `<circle cx="${x}" cy="${y}" r="5" fill="${color}"/>`;
