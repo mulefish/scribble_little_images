@@ -1,15 +1,13 @@
     import { promises as fs } from 'fs';
     import { sigmoid } from './nn_version4_library.js';
 
-
         // Test dataToLookAt
         const dataToLookAt = [
             -100, -1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.9999, 1, 1.1, 100, "Kittycat"
         ];
 
 
-
-    // Asynchronously load the model
+        // Get the pre-trained model!
     const modelName = "nn_version4_model.json"
     async function loadModel(filename = modelName) {
         const data = await fs.readFile(filename, 'utf-8');

@@ -12,6 +12,9 @@ os.makedirs(images_dir, exist_ok=True)
 def index():
     return render_template('index.html')
 
+@app.route('/politics')
+def politics():
+    return render_template('politics.html')
 
 
 @app.route('/save_image', methods=['POST'])

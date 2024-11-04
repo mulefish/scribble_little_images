@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix Chart</title>
+<style>
+    canvas {
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+    }
+</style>
+</head>
+<body>
+
+<div id="viewport"></div>
+<hr/>
+
+<script>
+    const W = window.innerWidth * 0.9; // 90% of the window width for canvas
+    const H = window.innerHeight * 0.65; // 65% of the window height for canvas
+    const padding = 40; // Increased padding to allow room for labels on the left side
+    const vp = `<canvas id="chartCanvas" width=${W + padding * 2} height=${H + padding * 2}></canvas>`;
+    document.getElementById("viewport").innerHTML = vp;
+
+    const canvas = document.getElementById("chartCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Data
+    const japanPmData = [
+        { Name: "Eisaku Satō", Start: 1964, End: 1972, SocialLiberalism: 40, FiscalConservatism: 70, EconomicGrowth: 7.0 },
+        { Name: "Kakuei Tanaka", Start: 1972, End: 1974, SocialLiberalism: 50, FiscalConservatism: 65, EconomicGrowth: 5.0 },
+        { Name: "Takeo Miki", Start: 1974, End: 1976, SocialLiberalism: 55, FiscalConservatism: 60, EconomicGrowth: 3.0 },
+        { Name: "Takeo Fukuda", Start: 1976, End: 1978, SocialLiberalism: 45, FiscalConservatism: 75, EconomicGrowth: 4.0 },
+        { Name: "Masayoshi Ōhira", Start: 1978, End: 1980, SocialLiberalism: 50, FiscalConservatism: 70, EconomicGrowth: 4.5 },
+        { Name: "Yasuhiro Nakasone", Start: 1982, End: 1987, SocialLiberalism: 40, FiscalConservatism: 80, EconomicGrowth: 5.0 },
+        { Name: "Shinzō Abe", Start: 2012, End: 2020, SocialLiberalism: 55, FiscalConservatism: 75, EconomicGrowth: 1.5 },
+        { Name: "Yoshihide Suga", Start: 2020, End: 2021, SocialLiberalism: 60, FiscalConservatism: 70, EconomicGrowth: -4.0 },
+        { Name: "Fumio Kishida", Start: 2021, End: null, SocialLiberalism: 65, FiscalConservatism: 65, EconomicGrowth: null }
+    ];
+
+    const usPresidentsData = [
+        { Name: "Richard Nixon", Start: 1969, End: 1974, SocialLiberalism: 40, FiscalConservatism: 70, EconomicGrowth: 2.5 },
+        { Name: "Gerald Ford", Start: 1974, End: 1977, SocialLiberalism: 45, FiscalConservatism: 65, EconomicGrowth: -0.5 },
+        { Name: "Jimmy Carter", Start: 1977, End: 1981, SocialLiberalism: 60, FiscalConservatism: 55, EconomicGrowth: 3.0 },
+        { Name: "Ronald Reagan", Start: 1981, End: 1989, SocialLiberalism: 35, FiscalConservatism: 85, EconomicGrowth: 3.5 },
+        { Name: "George H.W. Bush", Start: 1989, End: 1993, SocialLiberalism: 40, FiscalConservatism: 80, EconomicGrowth: 2.0 },
+        { Name: "Bill Clinton", Start: 1993, End: 2001, SocialLiberalism: 70, FiscalConservatism: 65, EconomicGrowth: 4.0 },
+        { Name: "Barack Obama", Start: 2009, End: 2017, SocialLiberalism: 75, FiscalConservatism: 60, EconomicGrowth: 2.5 },
+        { Name: "Donald Trump", Start: 2017, End: 2021, SocialLiberalism: 50, FiscalConservatism: 85, EconomicGrowth: 2.2 },
+        { Name: "Joe Biden", Start: 2021, End: null, SocialLiberalism: 80, FiscalConservatism: 55, EconomicGrowth: null }
+    ];
+
+    const xSpacing = W / 10; // Divide the width into 10 sections
+    const ySpacing = H / 10; // Divide the height into 10 sections
+
+    // Draw grid with labels
+    function drawGrid() {
+        ctx.strokeStyle = "#ddd";
+        ctx.lineWidth = 1;
+        ctx.font = "12px Arial";
+        ctx.fillStyle = "#000";
+
+        // Labels for grid
+        for (let i = 0; i <= 10; i++) {
+            const x = padding + i * xSpacing;
+            const y = padding + H - i * ySpacing;
+            const label = i * 10;
+
+            // Vertical lines and x-axis labels
+            ctx.beginPath();
+            ctx.moveTo(x, padding);
+            ctx.lineTo(x, padding + H);
+            ctx.stroke();
+            ctx.fillText(label, x - 10, padding + H + 20);
+
+            // Horizontal lines and y-axis labels
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(padding + W, y);
+            ctx.stroke();
+            if (i !== 0) ctx.fillText(label, padding - 20, y + 4);
+        }
+
+        // Axis titles
+        ctx.fillText("Fiscal Conservatism (0-100)", padding + W / 2 - 60, padding + H + 30);
+        ctx.save();
+        ctx.translate(padding - 25, padding + H / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText("Social Liberalism (0-100)", 0, 0);
+        ctx.restore();
+    }
+
+    // Draw data points and lines
+    function drawDataPoint(data, color) {
+        data.forEach(d => {
+            const x = padding + (d.FiscalConservatism / 100) * W;
+            const y = padding + H - (d.SocialLiberalism / 100) * H;
+
+            // Draw dot
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Draw economic growth line
+            if (d.EconomicGrowth !== null) {
+                const lineLength = d.EconomicGrowth * (W / 50); // Scale line based on economic growth
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + lineLength, y);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            // Draw name and % growth
+            ctx.fillStyle = color;
+            ctx.font = "10px Arial";
+            const label = `${d.Name} (${d.Start})`;
+            ctx.fillText(label, x + 5, y + (color === "brown" ? 12 : -8));
+
+            // Draw % growth to the left of the name with margin
+            if (d.EconomicGrowth !== null) {
+                ctx.fillStyle = "gray";
+                ctx.fillText(`${d.EconomicGrowth}%`, x - 40, y + (color === "brown" ? 12 : -8));
+            }
+        });
+    }
+
+    // Main drawing function
+    function drawChart() {
+        drawGrid();
+        drawDataPoint(japanPmData, "brown");
+        drawDataPoint(usPresidentsData, "blue");
+    }
+
+    // Initialize chart
+    drawChart();
+</script>
+
+</body>
+</html>
