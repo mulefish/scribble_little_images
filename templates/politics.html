@@ -51,10 +51,10 @@
         { Name: "Joe Biden", Start: 2021, End: null, SocialLiberalism: 80, FiscalConservatism: 55, EconomicGrowth: null }
     ];
 
-    const xSpacing = W / 10; // Divide the width into 10 sections
-    const ySpacing = H / 10; // Divide the height into 10 sections
+    const minX = 30, maxX = 100; // Fiscal Conservatism range, skipping first 30%
+    const minY = 30, maxY = 100; // Social Liberalism range, skipping first 30%
 
-    // Draw grid with labels
+    // Adjusted function to draw grid with zoomed-in labels
     function drawGrid() {
         ctx.strokeStyle = "#ddd";
         ctx.lineWidth = 1;
@@ -63,39 +63,40 @@
 
         // Labels for grid
         for (let i = 0; i <= 10; i++) {
-            const x = padding + i * xSpacing;
-            const y = padding + H - i * ySpacing;
-            const label = i * 10;
+            const x = padding + i * (W / 10);
+            const y = padding + H - i * (H / 10);
+            const xLabel = Math.round(minX + i * (maxX - minX) / 10);
+            const yLabel = Math.round(minY + i * (maxY - minY) / 10);
 
             // Vertical lines and x-axis labels
             ctx.beginPath();
             ctx.moveTo(x, padding);
             ctx.lineTo(x, padding + H);
             ctx.stroke();
-            ctx.fillText(label, x - 10, padding + H + 20);
+            ctx.fillText(xLabel, x - 10, padding + H + 20);
 
             // Horizontal lines and y-axis labels
             ctx.beginPath();
             ctx.moveTo(padding, y);
             ctx.lineTo(padding + W, y);
             ctx.stroke();
-            if (i !== 0) ctx.fillText(label, padding - 20, y + 4);
+            if (i !== 0) ctx.fillText(yLabel, padding - 30, y + 4);
         }
 
         // Axis titles
-        ctx.fillText("Fiscal Conservatism (0-100)", padding + W / 2 - 60, padding + H + 30);
+        ctx.fillText("Fiscal Conservatism (30-100)", padding + W / 2 - 60, padding + H + 30);
         ctx.save();
-        ctx.translate(padding - 25, padding + H / 2);
+        ctx.translate(padding - 30, padding + H / 2);
         ctx.rotate(-Math.PI / 2);
-        ctx.fillText("Social Liberalism (0-100)", 0, 0);
+        ctx.fillText("Social Liberalism (30-100)", 0, 0);
         ctx.restore();
     }
 
-    // Draw data points and lines
+    // Adjusted data point drawing to account for zoom
     function drawDataPoint(data, color) {
         data.forEach(d => {
-            const x = padding + (d.FiscalConservatism / 100) * W;
-            const y = padding + H - (d.SocialLiberalism / 100) * H;
+            const x = padding + ((d.FiscalConservatism - minX) / (maxX - minX)) * W;
+            const y = padding + H - ((d.SocialLiberalism - minY) / (maxY - minY)) * H;
 
             // Draw dot
             ctx.fillStyle = color;
@@ -117,14 +118,19 @@
             // Draw name and % growth
             ctx.fillStyle = color;
             ctx.font = "10px Arial";
-            const label = `${d.Name} (${d.Start})`;
+            let label = "" 
+            if ( d.EconomicGrowth == null ) {
+                label = `${d.Name} : ${d.Start} : tbd`;
+            } else {
+                label = `${d.Name} : ${d.Start} : ${d.EconomicGrowth}`;
+            }
             ctx.fillText(label, x + 5, y + (color === "brown" ? 12 : -8));
 
             // Draw % growth to the left of the name with margin
-            if (d.EconomicGrowth !== null) {
-                ctx.fillStyle = "gray";
-                ctx.fillText(`${d.EconomicGrowth}%`, x - 40, y + (color === "brown" ? 12 : -8));
-            }
+            // if (d.EconomicGrowth !== null) {
+            //     ctx.fillStyle = "gray";
+            //     ctx.fillText(`${d.EconomicGrowth}%`, x - 40, y + (color === "brown" ? 12 : -8));
+            // }
         });
     }
 
